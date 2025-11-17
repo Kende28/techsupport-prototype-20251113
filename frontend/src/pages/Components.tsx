@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 
 export function Components() {
   const [components, setComponents] = useState([]);
+  const [name, setName] = useState("");
+  const [desc, setDesc] = useState("");
+  const [available, setAvailable] = useState(1);
 
   const fetchComponents = async () => {
     try {
@@ -14,18 +17,33 @@ export function Components() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    const neComponent = {
-        component_name: name,
-        component_desc: desc,
-        component_available: available
-    }
+    e.preventDefault();
+    const newComponent = {
+      component_name: name,
+      component_desc: desc,
+      component_available: available,
+    };
     try {
-        const response = await fetch('http://')
+      const response = await fetch("http://localhost:3000/components", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newComponent),
+      });
+      fetchComponents();
     } catch (error) {
-        console.log(`Hiba: ${error}`)
+      console.log(`Hiba: ${error}`);
     }
-  }
+  };
+
+  const handleDelete = async (componentId: number) => {
+    const res = await fetch(`http://localhost:3000/components/${componentId}`, {
+      method: "DELETE",
+    });
+    if (!res.ok) {
+      throw new Error(`Error: ${res.status}`);
+    }
+    fetchComponents();
+  };
 
   const handleAvailable = async (componentId: number) => {
     const res = await fetch(
@@ -90,15 +108,67 @@ export function Components() {
                   ✖️
                 </span>
               </td>
+              <td>
+                <span
+                style={{cursor: "pointer"}}
+                onClick={() => handleDelete(component.id)}
+                >
+                  🗑️
+                </span>
+              </td>
             </tr>
           ))}
         </tbody>
       </table>
       <div className="container">
-        <div className="row">
-            <form onSubmit={handleSubmit()}>
-
-            </form>
+        <div className="column">
+          <form onSubmit={handleSubmit}>
+            <div className="row w-25">
+              <label htmlFor="name">Név: </label>
+              <br />
+              <input
+                id="name"
+                name="name"
+                type="text"
+                required
+                value={name}
+                onChange={(e) => {
+                  setName(e.target.value);
+                }}
+              />
+            </div>
+            <br />
+            <div className="row w-25">
+              <label htmlFor="desc">Leírás: </label>
+              <br />
+              <input
+                id="desc"
+                name="desc"
+                type="text"
+                required
+                value={desc}
+                onChange={(e) => {
+                  setDesc(e.target.value);
+                }}
+              />
+            </div>
+            <br />
+            <div className="row w-25">
+              <label htmlFor="available">Raktárban: </label>
+              <br />
+              <select
+                id="available"
+                name="available"
+                value={available}
+                onChange={(e) => setAvailable(parseInt(e.target.value))}
+              >
+                <option value={1}>Van</option>
+                <option value={0}>Nincs</option>
+              </select>
+            </div>
+            <br />
+            <button type="submit">Hozzáad</button>
+          </form>
         </div>
       </div>
     </>

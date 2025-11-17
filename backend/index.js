@@ -18,6 +18,20 @@ app.get("/", (req, res) => {
   res.send("Működik a szerver");
 });
 
+
+
+app.get("/pcs/unique", async (req, res) => {
+  try {
+    const [results] = await connection.query(
+      `SELECT pc_name, pc_desc FROM szamitogep_tabla GROUP BY szamitogep_tabla.pc_name;`
+    );
+    res.json(results);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Nem sikerült lekérdezni a számítógépet" });
+  }
+});
+
 app.get("/pcs", async (req, res) => {
   try {
     const [results] = await connection.query(
@@ -29,24 +43,6 @@ app.get("/pcs", async (req, res) => {
     res.status(500).json({ error: "Nem sikerült lekérdezni a számítógépet" });
   }
 });
-
-app.get("/pcs/unique", async (req, res) => {
-  try {
-    const [results] = await connection.query(
-      `SELECT 
-  pc_name,
-  pc_desc,
-  GROUP_CONCAT(component_name ORDER BY component_id SEPARATOR ', ') AS components
-FROM szamitogep_tabla
-GROUP BY pc_name, pc_desc;`
-    );
-    res.json(results);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Nem sikerült lekérdezni a számítógépet" });
-  }
-});
-
 
 
 
@@ -77,7 +73,7 @@ app.post("/components", async (req, res) => {
     const [result] = await connection.query(
       `INSERT INTO pc_components (component_name, component_desc, component_available)
        VALUES (?, ?, ?)`,
-      [component_name, component_desc || "", component_available]
+      [component_name, component_desc, component_available]
     );
 
     // Visszaküldjük az új komponens adatait
@@ -94,6 +90,24 @@ app.post("/components", async (req, res) => {
 });
 
 
+
+app.delete("/components/:id", async (req, res) => {
+  const componentId = req.params.id
+  try {
+    const [result] = await connection.query(
+      `DELETE FROM pc_components WHERE id = ?`,
+      [componentId]
+    );
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Component not found" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" })
+  }
+})
+
+
+
 app.put("/components/available/:id", async (req, res) => {
   const componentId = req.params.id;
   try {
@@ -102,7 +116,7 @@ app.put("/components/available/:id", async (req, res) => {
       [componentId]
     );
     if (result.affectedRows === 0) {
-      return res.status(404).json({ message: "Powerbank not found" });
+      return res.status(404).json({ message: "Component not found" });
     }
     res.json({ message: "Component availability changed (available) successfully" });
   } catch (error) {
@@ -120,7 +134,7 @@ app.put("/components/unavailable/:id", async (req, res) => {
         );
  
         if (result.affectedRows === 0) {
-            return res.status(404).json({ message: "Powerbank not found" });
+            return res.status(404).json({ message: "Component not found" });
         }
  
         res.json({ message: "Component availability changed (unavailable) successfully" });

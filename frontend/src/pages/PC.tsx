@@ -20,7 +20,7 @@ export function PC() {
   return (
     <>
       <h1>Számítógép lista</h1>
-       <table className="table">
+      <table className="table">
         <thead>
           <tr>
             <th scope="col">ID</th>
@@ -36,11 +36,8 @@ export function PC() {
               <td>{pc.id}</td>
               <td>{pc.pc_name}</td>
               <td>{pc.pc_desc}</td>
-              <td>{pc.component_id}
-              </td>
-              <td>
-                {pc.component_name}
-              </td>
+              <td>{pc.component_id}</td>
+              <td>{pc.component_name}</td>
             </tr>
           ))}
         </tbody>

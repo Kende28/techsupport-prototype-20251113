@@ -55,14 +55,14 @@ CREATE TABLE `szamitogep_tabla` (
   `pc_name` varchar(17) NOT NULL,
   `pc_desc` varchar(255) NOT NULL,
   `component_id` int(32) NOT NULL,
-  `compnent_name` varchar(17) NOT NULL
+  `component_name` varchar(17) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
 
 --
 -- A tábla adatainak kiíratása `szamitogep_tabla`
 --
 
-INSERT INTO `szamitogep_tabla` (`id`, `pc_name`, `pc_desc`, `component_id`, `compnent_name`) VALUES
+INSERT INTO `szamitogep_tabla` (`id`, `pc_name`, `pc_desc`, `component_id`, `component_name`) VALUES
 (1, 'Office-PC', 'Irodai felhasználásra optimalizált számítógép', 1, 'Intel i5 CPU'),
 (2, 'Office-PC', 'Irodai felhasználásra optimalizált számítógép', 2, '8GB DDR4 RAM'),
 (3, 'Office-PC', 'Irodai felhasználásra optimalizált számítógép', 3, '256GB SSD'),
